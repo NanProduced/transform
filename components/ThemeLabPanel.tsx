@@ -70,12 +70,7 @@ function FontUploadZone({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "font/woff": [".woff"],
-      "font/woff2": [".woff2"],
-      "font/ttf": [".ttf"],
-      "font/otf": [".otf"]
-    },
+    accept: ".woff,.woff2,.ttf,.otf,.eot",
     maxFiles: 10
   });
 
