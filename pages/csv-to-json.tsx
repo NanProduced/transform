@@ -90,7 +90,7 @@ export default function CsvToJson() {
     },
     quickSuggestions: false,
     lineNumbers: "on",
-    renderValidationDecorations: "off"
+    renderValidationDecorations: "on"
   };
 
   const outputOptions = {
@@ -117,28 +117,30 @@ export default function CsvToJson() {
     []
   );
 
-  const setErrorMarkers = useCallback((row: number, errorMessage: string) => {
-    if (!editorRef.current || !monacoRef.current) return;
+  const setErrorMarkers = useCallback(
+    (errors: { row: number; message: string }[]) => {
+      if (!editorRef.current || !monacoRef.current) return;
 
-    const model = editorRef.current.getModel();
-    if (!model) return;
+      const model = editorRef.current.getModel();
+      if (!model) return;
 
-    const lineNumber = Math.max(1, row + 1);
-    const lineContent = model.getLineContent(lineNumber);
+      const markers: monaco.editor.IMarkerData[] = errors.map(error => {
+        const lineNumber = Math.max(1, error.row + 1);
+        const lineContent = model.getLineContent(lineNumber);
+        return {
+          startLineNumber: lineNumber,
+          startColumn: 1,
+          endLineNumber: lineNumber,
+          endColumn: lineContent.length + 1,
+          message: error.message,
+          severity: monacoRef.current!.MarkerSeverity.Error
+        };
+      });
 
-    const markers: monaco.editor.IMarkerData[] = [
-      {
-        startLineNumber: lineNumber,
-        startColumn: 1,
-        endLineNumber: lineNumber,
-        endColumn: lineContent.length + 1,
-        message: errorMessage,
-        severity: monacoRef.current.MarkerSeverity.Error
-      }
-    ];
-
-    monacoRef.current.editor.setModelMarkers(model, "csv-parser", markers);
-  }, []);
+      monacoRef.current.editor.setModelMarkers(model, "csv-parser", markers);
+    },
+    []
+  );
 
   const clearErrorMarkers = useCallback(() => {
     if (!editorRef.current || !monacoRef.current) return;
@@ -168,25 +170,39 @@ export default function CsvToJson() {
         dynamicTyping: settings.dynamicTyping,
         skipEmptyLines: settings.skipEmptyLines,
         complete: results => {
-          setParseError(null);
-          clearErrorMarkers();
+          if (results.errors && results.errors.length > 0) {
+            const errors = results.errors.map((e: any) => ({
+              row: e.row !== undefined ? e.row : 0,
+              message: e.message || `${e.type}: ${e.code}`
+            }));
+            setErrorMarkers(errors);
+            setParseError(errors[0]);
+            setMessage(
+              `${errors.length} parse error(s): ${errors
+                .map(e => `row ${e.row + 1}: ${e.message}`)
+                .join(", ")}`
+            );
+          } else {
+            setParseError(null);
+            clearErrorMarkers();
+            setMessage("");
+          }
           const output = settings.header
             ? results.data
             : { data: results.data, meta: results.meta };
           setOutputValue(JSON.stringify(output, null, 2));
-          setMessage("");
         },
         error: (error: any, file?: any, row?: number) => {
           const errorRow = row !== undefined ? row : 0;
           setParseError({ row: errorRow, message: error.message });
-          setErrorMarkers(errorRow, error.message);
+          setErrorMarkers([{ row: errorRow, message: error.message }]);
           setMessage(`Parse error at row ${errorRow}: ${error.message}`);
         }
       });
     } catch (e) {
       setMessage(e.message);
       setParseError({ row: 0, message: e.message });
-      setErrorMarkers(0, e.message);
+      setErrorMarkers([{ row: 0, message: e.message }]);
     }
   }, [inputValue, settings, clearErrorMarkers, setErrorMarkers]);
 
