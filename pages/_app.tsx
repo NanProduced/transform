@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, IconButton, Pane, Tooltip } from "evergreen-ui";
 import Navigator from "@components/Navigator";
 import "@styles/main.css";
@@ -9,6 +9,8 @@ import { activeRouteData } from "@utils/routes";
 import Head from "next/head";
 import { Meta } from "@components/Meta";
 import { useDarkMode } from "@hooks/useDarkMode";
+import { ThemeLabProvider } from "@components/ThemeLabProvider";
+import ThemeLabPanel from "@components/ThemeLabPanel";
 
 const logo = (
   <svg
@@ -31,9 +33,10 @@ const logo = (
   </svg>
 );
 
-export default function App(props) {
+function AppContent(props) {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const router = useRouter();
+  const [isThemeLabOpen, setIsThemeLabOpen] = useState(false);
 
   useEffect(() => {
     let timer;
@@ -82,6 +85,10 @@ export default function App(props) {
           description={activeRoute?.desc}
         />
       )}
+      <ThemeLabPanel
+        isOpen={isThemeLabOpen}
+        onClose={() => setIsThemeLabOpen(false)}
+      />
       <Pane
         display="flex"
         alignItems="center"
@@ -95,6 +102,14 @@ export default function App(props) {
           {logo}
         </Pane>
         <Pane display="flex" alignItems={"center"}>
+          <Tooltip content="Theme Lab">
+            <IconButton
+              height={20}
+              marginRight={10}
+              icon="color"
+              onClick={() => setIsThemeLabOpen(true)}
+            />
+          </Tooltip>
           <Tooltip content="Toggle dark mode">
             <IconButton
               height={20}
@@ -142,5 +157,13 @@ export default function App(props) {
         <Component {...pageProps} />
       </Pane>
     </>
+  );
+}
+
+export default function App(props) {
+  return (
+    <ThemeLabProvider>
+      <AppContent {...props} />
+    </ThemeLabProvider>
   );
 }
