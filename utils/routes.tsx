@@ -222,7 +222,7 @@ export const categorizedRoutes = [
         label: "to Typescript",
         path: "/js-object-to-typescript",
         desc: "An online REPL for converting JS Object to Typescript."
-      },
+      }
     ]
   },
   {
@@ -351,6 +351,24 @@ export const categorizedRoutes = [
       {
         label: "to plain JavaScript",
         path: "/flow-to-javascript"
+      }
+    ]
+  },
+  {
+    category: "CSV",
+    iconName: "",
+    content: [
+      {
+        label: "to JSON",
+        path: "/csv-to-json",
+        packageName: "papaparse",
+        packageUrl: "https://github.com/mholt/PapaParse"
+      },
+      {
+        label: "from JSON",
+        path: "/json-to-csv",
+        packageName: "papaparse",
+        packageUrl: "https://github.com/mholt/PapaParse"
       }
     ]
   },

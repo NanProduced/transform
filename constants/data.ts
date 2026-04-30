@@ -530,3 +530,78 @@ pub contract Example {
   }
 }
 `;
+
+export const csv = `name,age,email,active,score,address.city,address.country
+Alice,30,alice@example.com,true,95.5,New York,USA
+Bob,25,bob@example.com,false,88.0,London,UK
+Charlie,35,charlie@example.com,true,92.3,Paris,France`;
+
+export const nestedJson = JSON.stringify(
+  [
+    {
+      id: 1,
+      name: "Alice Smith",
+      age: 30,
+      email: "alice@example.com",
+      isActive: true,
+      score: 95.5,
+      address: {
+        street: "123 Main St",
+        city: "New York",
+        country: "USA",
+        zip: {
+          code: "10001",
+          extension: "1234"
+        }
+      },
+      hobbies: ["reading", "gaming", "hiking"],
+      education: [
+        {
+          degree: "Bachelor",
+          school: "MIT",
+          year: 2015
+        },
+        {
+          degree: "Master",
+          school: "Stanford",
+          year: 2017
+        }
+      ],
+      metadata: {
+        createdAt: "2024-01-15",
+        tags: ["user", "premium"]
+      }
+    },
+    {
+      id: 2,
+      name: "Bob Johnson",
+      age: 25,
+      email: "bob@example.com",
+      isActive: false,
+      score: 88.0,
+      address: {
+        street: "456 Oak Ave",
+        city: "London",
+        country: "UK",
+        zip: {
+          code: "SW1A 1AA",
+          extension: null
+        }
+      },
+      hobbies: ["music", "sports"],
+      education: [
+        {
+          degree: "Bachelor",
+          school: "Oxford",
+          year: 2018
+        }
+      ],
+      metadata: {
+        createdAt: "2024-02-20",
+        tags: ["user"]
+      }
+    }
+  ],
+  null,
+  2
+);
