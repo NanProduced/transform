@@ -16,6 +16,7 @@ import Papa from "papaparse";
 import { csv as sampleCsv } from "@constants/data";
 import { useSettings } from "@hooks/useSettings";
 import Form, { InputType } from "@components/Form";
+import * as monaco from "monaco-editor";
 
 const Monaco = dynamic(() => import("../components/Monaco"), {
   ssr: false
@@ -76,6 +77,9 @@ export default function CsvToJson() {
     message: string;
   } | null>(null);
 
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<typeof monaco | null>(null);
+
   const inputOptions = {
     fontSize: 14,
     readOnly: false,
@@ -102,6 +106,49 @@ export default function CsvToJson() {
     renderValidationDecorations: "off"
   };
 
+  const handleEditorMount = useCallback(
+    (
+      editor: monaco.editor.IStandaloneCodeEditor,
+      monacoInstance: typeof monaco
+    ) => {
+      editorRef.current = editor;
+      monacoRef.current = monacoInstance;
+    },
+    []
+  );
+
+  const setErrorMarkers = useCallback((row: number, errorMessage: string) => {
+    if (!editorRef.current || !monacoRef.current) return;
+
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    const lineNumber = Math.max(1, row + 1);
+    const lineContent = model.getLineContent(lineNumber);
+
+    const markers: monaco.editor.IMarkerData[] = [
+      {
+        startLineNumber: lineNumber,
+        startColumn: 1,
+        endLineNumber: lineNumber,
+        endColumn: lineContent.length + 1,
+        message: errorMessage,
+        severity: monacoRef.current.MarkerSeverity.Error
+      }
+    ];
+
+    monacoRef.current.editor.setModelMarkers(model, "csv-parser", markers);
+  }, []);
+
+  const clearErrorMarkers = useCallback(() => {
+    if (!editorRef.current || !monacoRef.current) return;
+
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    monacoRef.current.editor.setModelMarkers(model, "csv-parser", []);
+  }, []);
+
   useEffect(() => {
     transform();
   }, [inputValue, settings]);
@@ -111,6 +158,7 @@ export default function CsvToJson() {
       setOutputValue("[]");
       setMessage("");
       setParseError(null);
+      clearErrorMarkers();
       return;
     }
 
@@ -121,6 +169,7 @@ export default function CsvToJson() {
         skipEmptyLines: settings.skipEmptyLines,
         complete: results => {
           setParseError(null);
+          clearErrorMarkers();
           const output = settings.header
             ? results.data
             : { data: results.data, meta: results.meta };
@@ -130,13 +179,16 @@ export default function CsvToJson() {
         error: (error: any, file?: any, row?: number) => {
           const errorRow = row !== undefined ? row : 0;
           setParseError({ row: errorRow, message: error.message });
+          setErrorMarkers(errorRow, error.message);
           setMessage(`Parse error at row ${errorRow}: ${error.message}`);
         }
       });
     } catch (e) {
       setMessage(e.message);
+      setParseError({ row: 0, message: e.message });
+      setErrorMarkers(0, e.message);
     }
-  }, [inputValue, settings]);
+  }, [inputValue, settings, clearErrorMarkers, setErrorMarkers]);
 
   const _toggleSettingsDialog = useCallback(
     () => setSettingsDialog(!showSettingsDialogue),
@@ -249,11 +301,11 @@ export default function CsvToJson() {
                 intent="danger"
                 onClick={() => {
                   toaster.danger(
-                    `Error at row ${parseError.row}: ${parseError.message}`
+                    `Error at row ${parseError.row + 1}: ${parseError.message}`
                   );
                 }}
               >
-                Error at row {parseError.row}
+                Error at row {parseError.row + 1}
               </Button>
             )}
 
@@ -313,6 +365,7 @@ export default function CsvToJson() {
               onChange={value => {
                 setInputValue(value);
               }}
+              onMount={handleEditorMount}
             />
           </div>
         </Pane>

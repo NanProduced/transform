@@ -1,6 +1,7 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
 import { Pane, Spinner } from "evergreen-ui";
+import * as monaco from "monaco-editor";
 
 export function processSize(size) {
   return !/^\d+$/.test(size) ? size : `${size}px`;
@@ -15,6 +16,10 @@ interface MonacoProps {
   options?: any;
   defaultValue?: string;
   onChange: (value: string) => void;
+  onMount?: (
+    editor: monaco.editor.IStandaloneCodeEditor,
+    monacoInstance: typeof monaco
+  ) => void;
 }
 
 export const Monaco: React.FC<MonacoProps> = ({
@@ -24,7 +29,8 @@ export const Monaco: React.FC<MonacoProps> = ({
   height,
   width,
   options,
-  onChange
+  onChange,
+  onMount
 }) => {
   return (
     <Editor
@@ -35,6 +41,7 @@ export const Monaco: React.FC<MonacoProps> = ({
       width={width}
       options={options}
       onChange={onChange}
+      onMount={onMount}
       loading={
         <Pane
           display="flex"

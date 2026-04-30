@@ -153,6 +153,12 @@ export const categorizedRoutes = [
         path: "/json-to-zod",
         packageUrl: "https://www.npmjs.com/package/json-to-zod",
         packageName: "json-to-zod"
+      },
+      {
+        label: "to CSV",
+        path: "/json-to-csv",
+        packageName: "papaparse",
+        packageUrl: "https://github.com/mholt/PapaParse"
       }
     ]
   },
@@ -361,12 +367,6 @@ export const categorizedRoutes = [
       {
         label: "to JSON",
         path: "/csv-to-json",
-        packageName: "papaparse",
-        packageUrl: "https://github.com/mholt/PapaParse"
-      },
-      {
-        label: "from JSON",
-        path: "/json-to-csv",
         packageName: "papaparse",
         packageUrl: "https://github.com/mholt/PapaParse"
       }
