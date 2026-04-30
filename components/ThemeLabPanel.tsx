@@ -83,16 +83,18 @@ function FontUploadZone({
         Drag & drop font files (.woff, .woff2, .ttf, .otf) or click to browse
       </Text>
 
-      <Pane
+      <div
         {...getRootProps()}
-        padding={24}
-        border="2px dashed"
-        borderColor={isDragActive ? "#0e7ccf" : "#ddd"}
-        backgroundColor={isDragActive ? "#f0f7ff" : "#fafafa"}
-        borderRadius={8}
-        textAlign="center"
-        cursor="pointer"
-        marginBottom={16}
+        style={{
+          padding: 24,
+          border: "2px dashed",
+          borderColor: isDragActive ? "#0e7ccf" : "#ddd",
+          backgroundColor: isDragActive ? "#f0f7ff" : "#fafafa",
+          borderRadius: 8,
+          textAlign: "center" as const,
+          cursor: "pointer",
+          marginBottom: 16
+        }}
       >
         <input {...getInputProps()} />
         <Text size={400} opacity={0.6}>
@@ -100,7 +102,7 @@ function FontUploadZone({
             ? "Drop the fonts here..."
             : "Drag 'n' drop fonts here, or click to select"}
         </Text>
-      </Pane>
+      </div>
 
       {customFonts.length > 0 && (
         <Pane>
