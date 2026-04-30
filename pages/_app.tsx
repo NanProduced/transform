@@ -106,7 +106,7 @@ function AppContent(props) {
             <IconButton
               height={20}
               marginRight={10}
-              icon="color"
+              icon="cog"
               onClick={() => setIsThemeLabOpen(true)}
             />
           </Tooltip>
