@@ -6,7 +6,6 @@ import { EditorPanelProps } from "@components/EditorPanel";
 import Form, { InputType } from "@components/Form";
 import { useSettings } from "@hooks/useSettings";
 import isSvg from "is-svg";
-import { Alert, Heading } from "evergreen-ui";
 import Router from "next/router";
 
 interface Settings {
@@ -77,22 +76,17 @@ export default function HtmlToJsxComponent() {
       editorProps={{
         topNotifications: () =>
           _isSvg ? (
-            <Alert
-              backgroundColor="#e7f7ff"
-              title={
-                <>
-                  SVG detected. For preview and optimization, go to{" "}
-                  <Heading
-                    size={400}
-                    is="a"
-                    color={"blue"}
-                    onClick={() => Router.push("/svg-to-jsx")}
-                  >
-                    SVG to JSX converter.
-                  </Heading>
-                </>
-              }
-            />
+            <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 px-4 py-3">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                SVG detected. For preview and optimization, go to{" "}
+                <button
+                  onClick={() => Router.push("/svg-to-jsx")}
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  SVG to JSX converter.
+                </button>
+              </p>
+            </div>
           ) : (
             undefined
           )

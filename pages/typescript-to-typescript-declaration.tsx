@@ -2,7 +2,6 @@ import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
 import { useCallback } from "react";
 import request from "@utils/request";
-import { Alert } from "evergreen-ui";
 
 export default function TypescriptToTypescriptDeclaration() {
   const transformer = useCallback(
@@ -24,10 +23,11 @@ export default function TypescriptToTypescriptDeclaration() {
       resultLanguage="typescript"
       resultEditorProps={{
         topNotifications: () => (
-          <Alert
-            backgroundColor="#e7f7ff"
-            title="This code is converted on the server."
-          />
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 px-4 py-3">
+            <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              This code is converted on the server.
+            </p>
+          </div>
         )
       }}
     />

@@ -1,27 +1,8 @@
 import React from "react";
 import Document, { Head, Main, NextScript, Html } from "next/document";
-import { extractStyles } from "evergreen-ui";
 
-interface DocumentProps {
-  css: string;
-  hydrationScript: React.ReactChild;
-}
-
-export default class MyDocument extends Document<DocumentProps> {
-  static getInitialProps({ renderPage }) {
-    const page = renderPage();
-    const { css, hydrationScript } = extractStyles();
-
-    return {
-      ...page,
-      css,
-      hydrationScript
-    };
-  }
-
+export default class MyDocument extends Document {
   render() {
-    const { css, hydrationScript } = this.props;
-
     return (
       <Html>
         <Head>
@@ -30,12 +11,24 @@ export default class MyDocument extends Document<DocumentProps> {
             name="google-site-verification"
             content="bjJSOEahdert-7mwVScrwTTUVR3nSe0bEj5YjevUNn0"
           />
-          <style dangerouslySetInnerHTML={{ __html: css }} />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+          />
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="anonymous"
+          />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
         </Head>
 
         <body>
           <Main />
-          {hydrationScript}
           <NextScript />
         </body>
       </Html>
