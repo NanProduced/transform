@@ -1,8 +1,11 @@
 import React from "react";
-import { useThemeContext, Theme } from "./ThemeProvider";
+import { useThemeContext } from "./ThemeProvider";
+import { Theme } from "@hooks/useTheme";
 import { SunIcon, MoonIcon, MonitorIcon } from "./ui/Icons";
 
-const themeOptions: { value: Theme; icon: React.FC; label: string }[] = [
+interface IconComponent extends React.FC<{ size?: number; className?: string }> {}
+
+const themeOptions: { value: Theme; icon: IconComponent; label: string }[] = [
   { value: "light", icon: SunIcon, label: "Light" },
   { value: "dark", icon: MoonIcon, label: "Dark" },
   { value: "system", icon: MonitorIcon, label: "System" }
@@ -34,7 +37,7 @@ const ThemeToggle: React.FC = () => {
         className="flex items-center justify-center w-9 h-9 rounded-lg hover:bg-muted/50 transition-colors text-foreground"
         aria-label="Toggle theme"
       >
-        <CurrentIcon className="w-5 h-5" />
+        <CurrentIcon size={20} className="w-5 h-5" />
       </button>
 
       {isOpen && (
@@ -56,7 +59,7 @@ const ThemeToggle: React.FC = () => {
                       : "text-foreground hover:bg-muted/50"
                   }`}
                 >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <Icon size={16} className="w-4 h-4 flex-shrink-0" />
                   <span className="flex-1 text-left">{option.label}</span>
                   {isActive && (
                     <span className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />

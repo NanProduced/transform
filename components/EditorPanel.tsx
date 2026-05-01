@@ -77,7 +77,7 @@ export default function EditorPanel({
   language,
   defaultValue,
   onChange,
-  id,
+  id: _id,
   packageDetails
 }: EditorPanelProps) {
   const [showSettingsDialogue, setSettingsDialog] = useState(false);
@@ -163,12 +163,7 @@ export default function EditorPanel({
   const { getRootProps } = useDropzone({
     onDrop: files => onFilePicked(files),
     disabled: !editable,
-    accept: acceptFiles
-      ? (Array.isArray(acceptFiles) ? acceptFiles : [acceptFiles]).reduce(
-          (acc, type) => ({ ...acc, [type]: [] }),
-          {}
-        )
-      : undefined,
+    accept: acceptFiles,
     onDropRejected: () => danger("This file type is not supported.")
   });
 
