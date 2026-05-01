@@ -110,10 +110,12 @@ export const transformers: Transformer[] = [
     "json",
     "go-bson",
     async value => {
-      const result = jsonToGo(value, { inline: false, allOmitEmpty: false });
-      return gofmt(
-        result.go.replace(/`json:"([^"]+)"`/g, '`bson:"$1" json:"$1"`')
-      );
+      return JSON.stringify(JSON.parse(value || "{}"), null, 2)
+        .replace(/\{/gm, "bson.M{")
+        .replace(/\[/gm, "bson.A{")
+        .replace(/\]/gm, "}")
+        .replace(/(\d|\w|")$/gm, "$1,")
+        .replace(/(\}$)(\n)/gm, "$1,$2");
     }
   ),
 
@@ -284,13 +286,14 @@ export const transformers: Transformer[] = [
     "JSON to Rust Serde",
     "json",
     "rust-serde",
-    async value => {
+    async (value, settings = {}) => {
       const { run } = await import("json_typegen_wasm");
       return run(
         "Root",
         value,
         JSON.stringify({
-          output_mode: "rust"
+          output_mode: "rust",
+          property_name_format: settings.property_name_format || "camelCase"
         })
       );
     }
@@ -318,9 +321,9 @@ export const transformers: Transformer[] = [
     "JSON to Zod",
     "json",
     "zod",
-    async value => {
+    async (value, settings = {}) => {
       const { jsonToZod } = await import("json-to-zod");
-      return jsonToZod(JSON.parse(value));
+      return jsonToZod(JSON.parse(value), settings.rootName || "schema", true);
     }
   ),
 
@@ -376,14 +379,9 @@ export const transformers: Transformer[] = [
     "json",
     "scala-case-class",
     async value => {
-      const { run } = await import("json_typegen_wasm");
-      return run(
-        "Root",
-        value,
-        JSON.stringify({
-          output_mode: "scala"
-        })
-      );
+      return transformJsonTypes(value, {
+        lang: "scala"
+      });
     }
   )
 ];
@@ -407,4 +405,17 @@ export function getAllFormats(): FormatType[] {
     formats.add(t.to);
   });
   return Array.from(formats);
+}
+
+export function createConversionPanelTransformer(
+  id: string,
+  settings?: Record<string, any>
+) {
+  const transformer = getTransformer(id);
+  if (!transformer) {
+    throw new Error(`Transformer not found: ${id}`);
+  }
+  return async ({ value }: { value: string }) => {
+    return transformer.transform(value, settings);
+  };
 }

@@ -3,7 +3,8 @@ import { EditorPanelProps } from "@components/EditorPanel";
 import Form, { InputType } from "@components/Form";
 import { useSettings } from "@hooks/useSettings";
 import * as React from "react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 interface Settings {
   rootName: string;
@@ -24,13 +25,9 @@ export default function JsonToZod() {
     rootName: "schema"
   });
 
-  const transformer = useCallback(
-    async ({ value }) => {
-      const { jsonToZod } = await import("json-to-zod");
-      return jsonToZod(JSON.parse(value), settings.rootName, true);
-    },
-    [settings]
-  );
+  const transformer = useMemo(() => {
+    return createConversionPanelTransformer("json-to-zod", settings);
+  }, [settings]);
 
   const getSettingsElement = useCallback<EditorPanelProps["settingElement"]>(
     ({ open, toggle }) => {

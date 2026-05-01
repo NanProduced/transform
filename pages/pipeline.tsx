@@ -8,12 +8,10 @@ import {
   Spinner,
   Alert,
   IconButton,
-  Popover,
   Tooltip,
   toaster,
   Badge,
   Dialog,
-  TextInput,
   Pill
 } from "evergreen-ui";
 import dynamic from "next/dynamic";
@@ -97,11 +95,6 @@ const getMonacoLanguage = (format: FormatType): string => {
   return mapping[format] || "plaintext";
 };
 
-const getDefaultValue = (format: FormatType): string => {
-  const value = (data as any)[format];
-  return value || "";
-};
-
 interface StageCardProps {
   stage: Stage;
   index: number;
@@ -129,13 +122,6 @@ function StageCard({
     loading: "blue",
     success: "green",
     error: "red"
-  } as const;
-
-  const statusIcons = {
-    idle: "more",
-    loading: "spinner",
-    success: "tick",
-    error: "error"
   } as const;
 
   if (!transformer) return null;
@@ -463,174 +449,180 @@ export default function PipelinePage() {
   return (
     <Pane
       display="flex"
-      flexDirection="column"
-      height="calc(100vh - 40px)"
+      flexDirection="row"
       overflow="hidden"
+      flex={1}
+      height={"calc(100vh - 40px)"}
     >
       <Pane
         display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        paddingX={20}
-        paddingY={12}
-        borderBottom
-        backgroundColor="#ffffff"
-        flexShrink={0}
+        flex={1}
+        borderRight
+        flexDirection="column"
+        overflow="hidden"
       >
-        <Pane display="flex" alignItems="center">
-          <Heading size={600} marginRight={20}>
-            Pipeline
-          </Heading>
-          <Badge color="blue">Multi-Step Conversion</Badge>
-        </Pane>
-        <Pane display="flex" alignItems="center">
-          {stages.length > 0 && (
-            <>
-              <Button
-                iconBefore="share"
-                appearance="minimal"
-                onClick={handleShare}
-                marginRight={10}
-              >
-                Share
-              </Button>
-              <Button
-                iconBefore="cross"
-                appearance="minimal"
-                intent="danger"
-                onClick={clearStages}
-                marginRight={10}
-              >
-                Clear
-              </Button>
-            </>
-          )}
-          {isRunning ? (
-            <Button iconBefore="stop" intent="danger" onClick={stopPipeline}>
-              Stop
-            </Button>
-          ) : (
-            <Button
-              iconBefore="play"
-              appearance="primary"
-              onClick={handleRun}
-              disabled={stages.length === 0}
-            >
-              Run Pipeline
-            </Button>
-          )}
-        </Pane>
-      </Pane>
-
-      <Pane
-        display="flex"
-        alignItems="center"
-        paddingX={20}
-        paddingY={12}
-        borderBottom
-        backgroundColor="#f8f9fa"
-        flexShrink={0}
-        flexWrap="wrap"
-      >
-        <Pane display="flex" alignItems="center" marginRight={20}>
-          <Text size={300} marginRight={8}>
-            From:
-          </Text>
-          <Select
-            value={startFormat || ""}
-            onChange={handleStartFormatChange}
-            width={180}
-            placeholder="Select format"
-          >
-            {availableFormats.map(format => (
-              <option key={format} value={format}>
-                {formatDisplayNames[format]}
-              </option>
-            ))}
-          </Select>
-        </Pane>
-        <Pane display="flex" alignItems="center" marginRight={20}>
-          <Text size={300} marginRight={8}>
-            To:
-          </Text>
-          <Select
-            value={endFormat || ""}
-            onChange={handleEndFormatChange}
-            width={180}
-            placeholder="Select format"
-          >
-            {availableFormats.map(format => (
-              <option key={format} value={format}>
-                {formatDisplayNames[format]}
-              </option>
-            ))}
-          </Select>
-        </Pane>
-        <Button
-          iconBefore="search"
-          onClick={handleFindPath}
-          disabled={!startFormat || !endFormat || startFormat === endFormat}
+        <Pane
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          paddingX={20}
+          paddingY={12}
+          borderBottom
+          backgroundColor="#ffffff"
+          flexShrink={0}
         >
-          Find Path
-        </Button>
-
-        {stages.length > 0 && (
-          <Pane
-            display="flex"
-            alignItems="center"
-            marginLeft={20}
-            paddingLeft={20}
-            borderLeft
-          >
-            <Text size={300} color="muted">
-              {stages.length} stage{stages.length !== 1 ? "s" : ""}
-              {startFormat && endFormat && (
-                <>
-                  {" • "}
-                  {formatDisplayNames[startFormat]} →{" "}
-                  {formatDisplayNames[endFormat]}
-                </>
-              )}
-            </Text>
-          </Pane>
-        )}
-      </Pane>
-
-      <Pane display="flex" flex={1} overflow="hidden" flexDirection="column">
-        {stages.length === 0 ? (
-          <Pane
-            display="flex"
-            flex={1}
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            padding={40}
-          >
-            <Heading size={500} marginBottom={12}>
-              Create a Conversion Pipeline
+          <Pane display="flex" alignItems="center">
+            <Heading size={600} marginRight={20}>
+              Pipeline
             </Heading>
-            <Text size={400} color="muted" textAlign="center" marginBottom={20}>
-              Select a start and end format, then click "Find Path" to discover
-              the shortest conversion chain.
-            </Text>
-            <Text size={300} color="muted">
-              Example: XML → JSON → Go
-            </Text>
+            <Badge color="blue">Multi-Step Conversion</Badge>
           </Pane>
-        ) : (
-          <>
+          <Pane display="flex" alignItems="center">
+            {stages.length > 0 && (
+              <>
+                <Button
+                  iconBefore="share"
+                  appearance="minimal"
+                  onClick={handleShare}
+                  marginRight={10}
+                >
+                  Share
+                </Button>
+                <Button
+                  iconBefore="cross"
+                  appearance="minimal"
+                  intent="danger"
+                  onClick={clearStages}
+                  marginRight={10}
+                >
+                  Clear
+                </Button>
+              </>
+            )}
+            {isRunning ? (
+              <Button iconBefore="stop" intent="danger" onClick={stopPipeline}>
+                Stop
+              </Button>
+            ) : (
+              <Button
+                iconBefore="play"
+                appearance="primary"
+                onClick={handleRun}
+                disabled={stages.length === 0}
+              >
+                Run Pipeline
+              </Button>
+            )}
+          </Pane>
+        </Pane>
+
+        <Pane
+          display="flex"
+          alignItems="center"
+          paddingX={20}
+          paddingY={12}
+          borderBottom
+          backgroundColor="#f8f9fa"
+          flexShrink={0}
+          flexWrap="wrap"
+        >
+          <Pane display="flex" alignItems="center" marginRight={20}>
+            <Text size={300} marginRight={8}>
+              From:
+            </Text>
+            <Select
+              value={startFormat || ""}
+              onChange={handleStartFormatChange}
+              width={180}
+              placeholder="Select format"
+            >
+              {availableFormats.map(format => (
+                <option key={format} value={format}>
+                  {formatDisplayNames[format]}
+                </option>
+              ))}
+            </Select>
+          </Pane>
+          <Pane display="flex" alignItems="center" marginRight={20}>
+            <Text size={300} marginRight={8}>
+              To:
+            </Text>
+            <Select
+              value={endFormat || ""}
+              onChange={handleEndFormatChange}
+              width={180}
+              placeholder="Select format"
+            >
+              {availableFormats.map(format => (
+                <option key={format} value={format}>
+                  {formatDisplayNames[format]}
+                </option>
+              ))}
+            </Select>
+          </Pane>
+          <Button
+            iconBefore="search"
+            onClick={handleFindPath}
+            disabled={!startFormat || !endFormat || startFormat === endFormat}
+          >
+            Find Path
+          </Button>
+
+          {stages.length > 0 && (
             <Pane
               display="flex"
-              paddingY={16}
-              paddingX={20}
-              borderBottom
-              flexShrink={0}
+              alignItems="center"
+              marginLeft={20}
+              paddingLeft={20}
+              borderLeft
             >
+              <Text size={300} color="muted">
+                {stages.length} stage{stages.length !== 1 ? "s" : ""}
+                {startFormat && endFormat && (
+                  <>
+                    {" • "}
+                    {formatDisplayNames[startFormat]} →{" "}
+                    {formatDisplayNames[endFormat]}
+                  </>
+                )}
+              </Text>
+            </Pane>
+          )}
+        </Pane>
+
+        <Pane display="flex" flex={1} overflow="hidden" flexDirection="column">
+          {stages.length === 0 ? (
+            <Pane
+              display="flex"
+              flex={1}
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+              padding={40}
+            >
+              <Heading size={500} marginBottom={12}>
+                Create a Conversion Pipeline
+              </Heading>
+              <Text
+                size={400}
+                color="muted"
+                textAlign="center"
+                marginBottom={20}
+              >
+                Select a start and end format, then click "Find Path" to
+                discover the shortest conversion chain.
+              </Text>
+              <Text size={300} color="muted">
+                Example: XML → JSON → Go
+              </Text>
+            </Pane>
+          ) : (
+            <>
               <Pane
                 flex={1}
-                marginRight={16}
-                border
-                borderRadius={8}
+                display="flex"
+                flexDirection="column"
+                borderBottom
                 overflow="hidden"
               >
                 <Pane
@@ -638,16 +630,13 @@ export default function PipelinePage() {
                   paddingX={12}
                   backgroundColor="#f8f9fa"
                   borderBottom
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
+                  flexShrink={0}
                 >
                   <Text size={300} fontWeight={500}>
                     Input ({startFormat ? formatDisplayNames[startFormat] : ""})
                   </Text>
-                  <Badge color="blue">Edit</Badge>
                 </Pane>
-                <Pane height={200}>
+                <Pane flex={1} overflow="hidden">
                   <Monaco
                     language={
                       startFormat ? getMonacoLanguage(startFormat) : "plaintext"
@@ -662,82 +651,104 @@ export default function PipelinePage() {
                 </Pane>
               </Pane>
 
-              <Pane flex={1} border borderRadius={8} overflow="hidden">
-                <Pane
-                  paddingY={8}
-                  paddingX={12}
-                  backgroundColor="#f8f9fa"
-                  borderBottom
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                >
-                  <Text size={300} fontWeight={500}>
-                    Final Output (
-                    {endFormat ? formatDisplayNames[endFormat] : ""})
-                  </Text>
-                  <Badge color={hasError ? "red" : "green"}>
-                    {hasError ? "Error" : "Result"}
-                  </Badge>
-                </Pane>
-                <Pane height={200}>
-                  <Monaco
-                    language={
-                      endFormat ? getMonacoLanguage(endFormat) : "plaintext"
-                    }
-                    value={
-                      stages.length > 0 &&
-                      stages[stages.length - 1].status === "success"
-                        ? stages[stages.length - 1].output
-                        : ""
-                    }
-                    options={{
-                      ...monacoOptions,
-                      readOnly: true
-                    }}
-                  />
-                </Pane>
+              <Pane
+                flexShrink={0}
+                minHeight={200}
+                maxHeight={250}
+                padding={16}
+                display="flex"
+                alignItems="stretch"
+                overflowX="auto"
+                backgroundColor="#fafafa"
+                borderTop
+              >
+                {stages.map((stage, index) => (
+                  <React.Fragment key={stage.id}>
+                    <StageCard
+                      stage={stage}
+                      index={index}
+                      totalStages={stages.length}
+                      isRunning={isRunning}
+                      onRemove={() => removeStage(stage.id)}
+                      onMoveUp={() => handleMoveStage(index, index - 1)}
+                      onMoveDown={() => handleMoveStage(index, index + 1)}
+                      onViewDetail={() => handleViewDetail(stage)}
+                    />
+                    {index < stages.length - 1 && (
+                      <Pane
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        paddingX={4}
+                      >
+                        <Text size={500} color="muted">
+                          →
+                        </Text>
+                      </Pane>
+                    )}
+                  </React.Fragment>
+                ))}
               </Pane>
-            </Pane>
-
-            <Pane
-              display="flex"
-              alignItems="stretch"
-              padding={20}
-              overflowX="auto"
-              flexShrink={0}
-              minHeight={200}
-            >
-              {stages.map((stage, index) => (
-                <React.Fragment key={stage.id}>
-                  <StageCard
-                    stage={stage}
-                    index={index}
-                    totalStages={stages.length}
-                    isRunning={isRunning}
-                    onRemove={() => removeStage(stage.id)}
-                    onMoveUp={() => handleMoveStage(index, index - 1)}
-                    onMoveDown={() => handleMoveStage(index, index + 1)}
-                    onViewDetail={() => handleViewDetail(stage)}
-                  />
-                  {index < stages.length - 1 && (
-                    <Pane
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      paddingX={4}
-                    >
-                      <Text size={500} color="muted">
-                        →
-                      </Text>
-                    </Pane>
-                  )}
-                </React.Fragment>
-              ))}
-            </Pane>
-          </>
-        )}
+            </>
+          )}
+        </Pane>
       </Pane>
+
+      {stages.length > 0 && (
+        <Pane display="flex" flex={1} flexDirection="column" overflow="hidden">
+          <Pane
+            paddingY={8}
+            paddingX={12}
+            backgroundColor="#f8f9fa"
+            borderBottom
+            flexShrink={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Text size={300} fontWeight={500}>
+              Final Output ({endFormat ? formatDisplayNames[endFormat] : ""})
+            </Text>
+            <Badge color={hasError ? "red" : "green"}>
+              {hasError ? "Error" : "Result"}
+            </Badge>
+          </Pane>
+          <Pane flex={1} overflow="hidden">
+            <Monaco
+              language={endFormat ? getMonacoLanguage(endFormat) : "plaintext"}
+              value={
+                stages.length > 0 &&
+                stages[stages.length - 1].status === "success"
+                  ? stages[stages.length - 1].output
+                  : ""
+              }
+              options={{
+                ...monacoOptions,
+                readOnly: true
+              }}
+            />
+          </Pane>
+        </Pane>
+      )}
+
+      {stages.length === 0 && (
+        <Pane
+          display="flex"
+          flex={1}
+          alignItems="center"
+          justifyContent="center"
+          backgroundColor="#fafafa"
+        >
+          <Pane textAlign="center">
+            <Text size={400} color="muted" marginBottom={8}>
+              Output will appear here
+            </Text>
+            <Text size={300} color="muted">
+              Select formats and click "Find Path" to create a pipeline
+            </Text>
+          </Pane>
+        </Pane>
+      )}
 
       <StageDetailModal
         stage={selectedStageDetail}

@@ -1,11 +1,11 @@
 import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
-import { json2ts } from "json-ts";
+import { useCallback, useMemo } from "react";
 import { useSettings } from "@hooks/useSettings";
 import Form, { InputType } from "@components/Form";
 import { EditorPanelProps } from "@components/EditorPanel";
 import { Settings } from "@constants/svgoConfig";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 const formFields = [
   {
@@ -36,6 +36,10 @@ export default function JsonToFlow() {
 
   const [settings, setSettings] = useSettings(name, defaultSettings);
 
+  const transformer = useMemo(() => {
+    return createConversionPanelTransformer("json-to-flow", settings);
+  }, [settings]);
+
   const getSettingsElement = useCallback<EditorPanelProps["settingElement"]>(
     ({ open, toggle }) => {
       return (
@@ -50,13 +54,6 @@ export default function JsonToFlow() {
       );
     },
     []
-  );
-
-  const transformer = useCallback(
-    async ({ value }) => {
-      return json2ts(value, { flow: true, ...settings });
-    },
-    [settings]
   );
 
   return (

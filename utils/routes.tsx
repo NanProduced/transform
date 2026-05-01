@@ -222,7 +222,7 @@ export const categorizedRoutes = [
         label: "to Typescript",
         path: "/js-object-to-typescript",
         desc: "An online REPL for converting JS Object to Typescript."
-      },
+      }
     ]
   },
   {
@@ -351,6 +351,17 @@ export const categorizedRoutes = [
       {
         label: "to plain JavaScript",
         path: "/flow-to-javascript"
+      }
+    ]
+  },
+  {
+    category: "Pipeline",
+    iconName: "",
+    content: [
+      {
+        label: "Multi-Step Conversion",
+        path: "/pipeline",
+        desc: "Create multi-step conversion pipelines like XML → JSON → Go"
       }
     ]
   },

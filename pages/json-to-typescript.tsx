@@ -3,7 +3,8 @@ import { EditorPanelProps } from "@components/EditorPanel";
 import Form, { InputType } from "@components/Form";
 import { useSettings } from "@hooks/useSettings";
 import * as React from "react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 interface Settings {
   typealias: boolean;
@@ -24,21 +25,9 @@ export default function JsonToTypescript() {
     typealias: false
   });
 
-  const transformer = useCallback(
-    async ({ value }) => {
-      const { run } = await import("json_typegen_wasm");
-      return run(
-        "Root",
-        value,
-        JSON.stringify({
-          output_mode: settings.typealias
-            ? "typescript/typealias"
-            : "typescript"
-        })
-      );
-    },
-    [settings]
-  );
+  const transformer = useMemo(() => {
+    return createConversionPanelTransformer("json-to-typescript", settings);
+  }, [settings]);
 
   const getSettingsElement = useCallback<EditorPanelProps["settingElement"]>(
     ({ open, toggle }) => {
