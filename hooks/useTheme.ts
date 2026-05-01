@@ -25,7 +25,7 @@ export function useTheme() {
     root.classList.remove("light", "dark");
     root.classList.add(resolved);
 
-    root.style.colorScheme = resolved;
+    (root.style as any).colorScheme = resolved;
 
     setResolvedTheme(resolved);
   };

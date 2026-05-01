@@ -1,6 +1,8 @@
 import React, { createContext, useContext, ReactNode } from "react";
 import { useTheme, Theme } from "@hooks/useTheme";
 
+export type { Theme };
+
 interface ThemeContextType {
   theme: Theme;
   resolvedTheme: "light" | "dark";

@@ -117,7 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   return (
                     <Link key={item.label} href={item.path} prefetch={false}>
                       <a
-                        onClick={e => {
+                        onClick={() => {
                           if (
                             typeof window !== "undefined" &&
                             window.innerWidth < 1024
