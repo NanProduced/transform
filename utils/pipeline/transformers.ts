@@ -1,13 +1,4 @@
 import { Transformer, FormatType } from "./types";
-import { xml2json } from "xml-js";
-import yaml from "yaml";
-import toml from "@iarna/toml";
-import jsonToGo from "json-to-go";
-import gofmt from "gofmt.js";
-import { json2ts } from "json-ts";
-import transformJsonTypes from "transform-json-types";
-import { convert as jsdocConvert } from "@assets/vendor/json-to-jsdoc";
-import { jsonToSchema } from "@walmartlabs/json-to-simple-graphql-schema/lib";
 
 const createTransformer = (
   id: string,
@@ -30,6 +21,7 @@ export const transformers: Transformer[] = [
     "xml",
     "json",
     async value => {
+      const { xml2json } = await import("xml-js");
       return JSON.stringify(
         JSON.parse(
           xml2json(value, {
@@ -46,6 +38,7 @@ export const transformers: Transformer[] = [
     "yaml",
     "json",
     async value => {
+      const yaml = await import("yaml");
       return JSON.stringify(yaml.parse(value));
     }
   ),
@@ -56,6 +49,7 @@ export const transformers: Transformer[] = [
     "json",
     "yaml",
     async value => {
+      const yaml = await import("yaml");
       return yaml.stringify(JSON.parse(value));
     }
   ),
@@ -66,6 +60,7 @@ export const transformers: Transformer[] = [
     "toml",
     "json",
     async value => {
+      const toml = await import("@iarna/toml");
       return JSON.stringify(toml.parse(value));
     }
   ),
@@ -76,6 +71,7 @@ export const transformers: Transformer[] = [
     "json",
     "toml",
     async value => {
+      const toml = await import("@iarna/toml");
       return toml.stringify(JSON.parse(value));
     }
   ),
@@ -86,6 +82,8 @@ export const transformers: Transformer[] = [
     "yaml",
     "toml",
     async value => {
+      const yaml = await import("yaml");
+      const toml = await import("@iarna/toml");
       return toml.stringify(yaml.parse(value));
     }
   ),
@@ -96,12 +94,16 @@ export const transformers: Transformer[] = [
     "toml",
     "yaml",
     async value => {
+      const yaml = await import("yaml");
+      const toml = await import("@iarna/toml");
       return yaml.stringify(toml.parse(value));
     }
   ),
 
   createTransformer("json-to-go", "JSON to Go", "json", "go", async value => {
-    return gofmt(jsonToGo(value).go);
+    const jsonToGo = await import("json-to-go");
+    const gofmt = await import("gofmt.js");
+    return gofmt(jsonToGo.default(value).go);
   }),
 
   createTransformer(
@@ -144,6 +146,7 @@ export const transformers: Transformer[] = [
     "json",
     "flow",
     async (value, settings = {}) => {
+      const { json2ts } = await import("json-ts");
       return json2ts(value, { flow: true, ...settings });
     }
   ),
@@ -264,7 +267,7 @@ export const transformers: Transformer[] = [
 
           const titleCaseVariable = className;
           const getters = `\tpublic ${type} get${titleCaseVariable}() {\n\t\treturn this.${variable};\n\t}\n\n`;
-          const setters = `\tpublic void set${titleCaseVariable}(${type} ${variable}) {\n\t\tthis.${variable} = ${variable};\n\t}\n\n`;
+          const setters = `\tpublic void set${titleCaseVariable}(${type} ${variable}) {\n\t\tthis.${variableName} = ${variable};\n\t}\n\n`;
           const constructor = `\tpublic ${className}(${type} ${variable}) {\n\t\tthis.${variable} = ${variable};\n\t}\n`;
           javaTransformation += `public class ${className} {\n\tprivate ${type} ${variable};\n`;
           javaTransformation += `\n${constructor}\n${getters}${setters}}`;
@@ -333,7 +336,8 @@ export const transformers: Transformer[] = [
     "json",
     "jsdoc",
     async value => {
-      return jsdocConvert(value);
+      const { convert } = await import("@assets/vendor/json-to-jsdoc");
+      return convert(value);
     }
   ),
 
@@ -343,7 +347,8 @@ export const transformers: Transformer[] = [
     "json",
     "io-ts",
     async value => {
-      const code = transformJsonTypes(value, {
+      const transformJsonTypes = await import("transform-json-types");
+      const code = transformJsonTypes.default(value, {
         lang: "iots"
       });
       return `import * as t from "io-ts";\n\n${code}`;
@@ -356,7 +361,8 @@ export const transformers: Transformer[] = [
     "json",
     "sarcastic",
     async value => {
-      const code = transformJsonTypes(value, {
+      const transformJsonTypes = await import("transform-json-types");
+      const code = transformJsonTypes.default(value, {
         lang: "sarcastic"
       });
       return `import is from "sarcastic";\n\n${code}`;
@@ -369,6 +375,9 @@ export const transformers: Transformer[] = [
     "json",
     "graphql",
     async value => {
+      const { jsonToSchema } = await import(
+        "@walmartlabs/json-to-simple-graphql-schema/lib"
+      );
       return jsonToSchema({ jsonInput: value }).value;
     }
   ),
@@ -379,7 +388,8 @@ export const transformers: Transformer[] = [
     "json",
     "scala-case-class",
     async value => {
-      return transformJsonTypes(value, {
+      const transformJsonTypes = await import("transform-json-types");
+      return transformJsonTypes.default(value, {
         lang: "scala"
       });
     }
