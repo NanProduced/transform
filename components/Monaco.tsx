@@ -1,6 +1,7 @@
 import React from "react";
 import Editor from "@monaco-editor/react";
-import { Pane, Spinner } from "evergreen-ui";
+import { LoaderIcon } from "@components/ui/Icons";
+import { useThemeContext } from "@components/ThemeProvider";
 
 export function processSize(size) {
   return !/^\d+$/.test(size) ? size : `${size}px`;
@@ -26,6 +27,9 @@ export const Monaco: React.FC<MonacoProps> = ({
   options,
   onChange
 }) => {
+  const { isDark } = useThemeContext();
+  const monacoTheme = isDark ? "vs-dark" : "vs";
+
   return (
     <Editor
       defaultLanguage={language}
@@ -33,18 +37,16 @@ export const Monaco: React.FC<MonacoProps> = ({
       value={value}
       height={height}
       width={width}
-      options={options}
+      theme={monacoTheme}
+      options={{
+        ...options,
+        theme: monacoTheme
+      }}
       onChange={onChange}
       loading={
-        <Pane
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          height={400}
-          flex={1}
-        >
-          <Spinner />
-        </Pane>
+        <div className="flex items-center justify-center h-[400px] flex-1">
+          <LoaderIcon className="w-8 h-8 text-primary-600" />
+        </div>
       }
     />
   );

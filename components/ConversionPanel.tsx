@@ -1,12 +1,11 @@
-import { Pane, Alert, Spinner } from "evergreen-ui";
+import React, { useEffect, useState } from "react";
 import EditorPanel, { EditorPanelProps } from "@components/EditorPanel";
-import * as React from "react";
-import { useEffect, useState } from "react";
 import { Language, useData } from "@hooks/useData";
 import { useRouter } from "next/router";
 import { activeRouteData } from "@utils/routes";
 import PrettierWorker from "@workers/prettier.worker";
 import { getWorker } from "@utils/workerWrapper";
+import { LoaderIcon, AlertTriangleIcon, XIcon } from "@components/ui/Icons";
 
 let prettierWorker;
 
@@ -42,7 +41,7 @@ export interface ConversionPanelProps {
   settings?: any;
 }
 
-const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function({
+const ConversionPanel: React.FC<ConversionPanelProps> = function({
   splitEditorProps,
   editorProps,
   resultEditorProps,
@@ -100,7 +99,6 @@ const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function(
           language: resultLanguage
         });
 
-        // Fix for #319
         if (prettyResult.startsWith(";<")) {
           prettyResult = prettyResult.slice(1);
         }
@@ -118,20 +116,8 @@ const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function(
 
   return (
     <>
-      <Pane
-        display="flex"
-        flexDirection="row"
-        overflow="hidden"
-        flex={1}
-        height={"calc(100vh - 40px)"}
-      >
-        <Pane
-          display="flex"
-          flex={1}
-          borderRight
-          flexDirection="column"
-          overflow="hidden"
-        >
+      <div className="flex flex-row overflow-hidden flex-1 h-[calc(100vh-48px)]">
+        <div className="flex flex-1 border-r border-border flex-col overflow-hidden">
           <EditorPanel
             language={getEditorLanguage(editorLanguage)}
             onChange={setValue}
@@ -146,7 +132,7 @@ const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function(
           />
 
           {splitTitle && (
-            <Pane display="flex" flex={1} borderTop>
+            <div className="flex flex-1 border-t border-border">
               <EditorPanel
                 title={splitTitle}
                 defaultValue={splitValue}
@@ -158,33 +144,17 @@ const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function(
                 hasClear
                 {...splitEditorProps}
               />
-            </Pane>
+            </div>
           )}
-        </Pane>
-        <Pane display="flex" flex={1} position="relative">
+        </div>
+
+        <div className="flex flex-1 relative overflow-hidden">
           {showUpdateSpinner && (
-            <Pane
-              display="inline-flex"
-              position="absolute"
-              backgroundColor="#fff"
-              zIndex={9}
-              borderRadius={"50%"}
-              paddingX={8}
-              paddingY={8}
-              elevation={1}
-              top={50}
-              right={30}
-            >
-              <Spinner
-                css={{
-                  "& circle": {
-                    stroke: "#0e7ccf"
-                  }
-                }}
-                size={32}
-              />
-            </Pane>
+            <div className="absolute top-12 right-8 z-10 inline-flex bg-background border border-border rounded-full shadow-lg p-2">
+              <LoaderIcon className="w-6 h-6 text-primary-600" />
+            </div>
           )}
+
           <EditorPanel
             title={resultTitle}
             defaultValue={result}
@@ -196,22 +166,26 @@ const ConversionPanel: React.FunctionComponent<ConversionPanelProps> = function(
             packageDetails={packageDetails}
             {...resultEditorProps}
           />
-        </Pane>
-      </Pane>
+        </div>
+      </div>
 
       {message && (
-        <Alert
-          paddingY={15}
-          paddingX={20}
-          left={240}
-          right={0}
-          position="absolute"
-          intent="danger"
-          bottom={0}
-          title={message}
-          backgroundColor="#FAE2E2"
-          zIndex={3}
-        />
+        <div className="absolute left-0 lg:left-72 right-0 bottom-0 z-30 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangleIcon className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                {message}
+              </p>
+            </div>
+            <button
+              onClick={() => setMessage("")}
+              className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-800/20 transition-colors text-red-500"
+            >
+              <XIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
