@@ -1,13 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
-import { useCallback } from "react";
 import * as React from "react";
-import jsonToGo from "json-to-go";
-import gofmt from "gofmt.js";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToGo() {
-  const transformer = useCallback(({ value }) => {
-    return gofmt(jsonToGo(value).go);
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-go");
 
   return (
     <ConversionPanel

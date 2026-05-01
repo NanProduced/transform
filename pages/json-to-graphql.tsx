@@ -1,12 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
-import { useCallback } from "react";
 import * as React from "react";
-import { jsonToSchema } from "@walmartlabs/json-to-simple-graphql-schema/lib";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToGraphql() {
-  const transformer = useCallback(({ value }) => {
-    return jsonToSchema({ jsonInput: value }).value;
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-graphql");
 
   return (
     <ConversionPanel

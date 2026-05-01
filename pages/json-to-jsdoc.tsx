@@ -1,12 +1,9 @@
-import ConversionPanel, { Transformer } from "@components/ConversionPanel";
+import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
-import { convert } from "@assets/vendor/json-to-jsdoc";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToJsdoc() {
-  const transformer = useCallback<Transformer>(async ({ value }) => {
-    return convert(value);
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-jsdoc");
 
   return (
     <ConversionPanel

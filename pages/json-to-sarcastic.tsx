@@ -1,16 +1,9 @@
-import transform from "transform-json-types";
-import ConversionPanel, { Transformer } from "@components/ConversionPanel";
+import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToSarcastic() {
-  const transformer = useCallback<Transformer>(async ({ value }) => {
-    const code = transform(value, {
-      lang: "sarcastic"
-    });
-
-    return `import is from "sarcastic";\n\n${code}`;
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-sarcastic");
 
   return (
     <ConversionPanel

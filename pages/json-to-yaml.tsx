@@ -1,13 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
-import { useCallback } from "react";
 import * as React from "react";
-import { stringify } from "yaml";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToYaml() {
-  const transformer = useCallback(
-    ({ value }) => Promise.resolve(stringify(JSON.parse(value))),
-    []
-  );
+  const transformer = createConversionPanelTransformer("json-to-yaml");
 
   return (
     <ConversionPanel

@@ -1,13 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
-import { useCallback } from "react";
 import * as React from "react";
-import { stringify } from "@iarna/toml";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToToml() {
-  const transformer = useCallback(
-    ({ value }) => Promise.resolve(stringify(JSON.parse(value))),
-    []
-  );
+  const transformer = createConversionPanelTransformer("json-to-toml");
 
   return (
     <ConversionPanel

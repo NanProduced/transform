@@ -1,18 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToJsonSchema() {
-  const transformer = useCallback(async ({ value }) => {
-    const { run } = await import("json_typegen_wasm");
-    return run(
-      "Root",
-      value,
-      JSON.stringify({
-        output_mode: "json_schema"
-      })
-    );
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-json-schema");
 
   return (
     <ConversionPanel

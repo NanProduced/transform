@@ -1,14 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
-import { useCallback } from "react";
 import * as React from "react";
-import yaml from "yaml";
-import toml from "@iarna/toml";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function TomlToYaml() {
-  const transformer = useCallback(
-    ({ value }) => Promise.resolve(yaml.stringify(toml.parse(value))),
-    []
-  );
+  const transformer = createConversionPanelTransformer("toml-to-yaml");
 
   return (
     <ConversionPanel

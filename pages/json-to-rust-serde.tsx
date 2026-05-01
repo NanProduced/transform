@@ -1,10 +1,11 @@
-import ConversionPanel, { Transformer } from "@components/ConversionPanel";
+import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import Form, { InputType } from "@components/Form";
 import { useSettings } from "@hooks/useSettings";
 import { EditorPanelProps } from "@components/EditorPanel";
 import { Settings } from "@constants/svgoConfig";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 const formFields = [
   {
@@ -35,20 +36,9 @@ export default function JsonToRustSerde() {
 
   const [settings, setSettings] = useSettings(name, defaultSettings);
 
-  const transformer = useCallback<Transformer>(
-    async ({ value }) => {
-      const { run } = await import("json_typegen_wasm");
-      return run(
-        "Root",
-        value,
-        JSON.stringify({
-          output_mode: "rust",
-          property_name_format: settings.property_name_format
-        })
-      );
-    },
-    [settings]
-  );
+  const transformer = useMemo(() => {
+    return createConversionPanelTransformer("json-to-rust-serde", settings);
+  }, [settings]);
 
   const getSettingsElement = useCallback<EditorPanelProps["settingElement"]>(
     ({ open, toggle }) => {

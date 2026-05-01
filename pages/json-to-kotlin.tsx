@@ -1,18 +1,9 @@
 import ConversionPanel from "@components/ConversionPanel";
 import * as React from "react";
-import { useCallback } from "react";
+import { createConversionPanelTransformer } from "@utils/pipeline/transformers";
 
 export default function JsonToKotlin() {
-  const transformer = useCallback(async ({ value }) => {
-    const { run } = await import("json_typegen_wasm");
-    return run(
-      "Root",
-      value,
-      JSON.stringify({
-        output_mode: "kotlin"
-      })
-    );
-  }, []);
+  const transformer = createConversionPanelTransformer("json-to-kotlin");
 
   return (
     <ConversionPanel
