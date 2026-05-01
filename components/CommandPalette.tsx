@@ -88,44 +88,44 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-      <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-      />
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 sm:pt-24">
+      <div className="fixed inset-0 bg-black/50" onClick={onClose} />
 
-      <div className="relative w-full max-w-lg mx-4 bg-background border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-down duration-200">
-        <div className="flex items-center px-4 py-3 border-b border-border">
-          <SearchIcon className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+      <div className="relative w-full max-w-lg mx-4 bg-background border border-border rounded-lg shadow-2xl overflow-hidden">
+        <div className="flex items-center px-3 py-2 border-b border-border">
+          <SearchIcon
+            size={20}
+            className="text-muted-foreground flex-shrink-0"
+          />
           <input
             ref={inputRef}
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search transforms... (e.g., JSON to TypeScript)"
-            className="flex-1 px-3 py-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-base"
+            placeholder="Search transforms..."
+            className="flex-1 px-3 py-2 bg-transparent text-foreground placeholder:text-muted-foreground outline-none"
             autoFocus
           />
           <button
             onClick={onClose}
-            className="ml-2 p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors"
+            className="ml-2 p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
           >
-            <XIcon className="w-4 h-4" />
+            <XIcon size={16} />
           </button>
         </div>
 
-        <div className="max-h-96 overflow-y-auto scrollbar-thin">
+        <div className="max-h-80 overflow-y-auto">
           {filteredRoutes.length > 0 ? (
-            <div className="py-2">
+            <div className="py-1">
               {filteredRoutes.map((route, index) => (
                 <button
                   key={route.path}
                   onClick={() => handleSelect(route.path)}
-                  className={`w-full flex items-center px-4 py-2.5 text-left transition-colors ${
+                  className={`w-full flex items-center px-3 py-2 text-left transition-colors ${
                     index === selectedIndex
                       ? "bg-accent/10 text-accent"
-                      : "hover:bg-muted/50 text-foreground"
+                      : "hover:bg-accent/5 text-foreground"
                   }`}
                 >
                   <div className="flex-1 min-w-0">
@@ -145,43 +145,37 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                       </p>
                     )}
                   </div>
-                  {index === selectedIndex && (
-                    <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                      Enter
-                    </span>
-                  )}
                 </button>
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <SearchIcon className="w-8 h-8 mb-2 opacity-50" />
+            <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+              <SearchIcon size={32} className="mb-2 opacity-50" />
               <p className="text-sm">No transforms found</p>
-              <p className="text-xs mt-1">Try a different search term</p>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-muted/30">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between px-3 py-2 border-t border-border bg-muted/30">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
-              <span className="px-1.5 py-0.5 bg-muted rounded font-mono">
+              <span className="px-1.5 py-0.5 bg-background rounded border border-border font-mono">
                 ↑
               </span>
-              <span className="px-1.5 py-0.5 bg-muted rounded font-mono">
+              <span className="px-1.5 py-0.5 bg-background rounded border border-border font-mono">
                 ↓
               </span>
-              Navigate
+              <span className="ml-1">Navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <span className="px-1.5 py-0.5 bg-muted rounded font-mono">
+              <span className="px-1.5 py-0.5 bg-background rounded border border-border font-mono">
                 ↵
               </span>
-              Select
+              <span className="ml-1">Select</span>
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <CommandIcon className="w-3 h-3" />
+            <CommandIcon size={12} />
             <span>+</span>
             <span>K</span>
             <span className="ml-1">to close</span>
@@ -202,12 +196,12 @@ export const CommandPaletteTrigger: React.FC<CommandPaletteTriggerProps> = ({
   return (
     <button
       onClick={onOpen}
-      className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors border border-border/50"
+      className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground bg-muted hover:bg-muted/80 rounded-md transition-colors border border-border"
     >
-      <SearchIcon className="w-4 h-4" />
+      <SearchIcon size={16} />
       <span className="hidden sm:inline">Search...</span>
-      <span className="flex items-center gap-0.5 text-xs">
-        <CommandIcon className="w-3 h-3" />
+      <span className="flex items-center gap-0.5 text-xs ml-auto">
+        <CommandIcon size={12} />
         <span>K</span>
       </span>
     </button>
